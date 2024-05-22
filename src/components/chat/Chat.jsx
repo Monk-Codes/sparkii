@@ -11,8 +11,8 @@ const Chat = () => {
  return (
   <>
    <div className="chatContainer">
-    <div className=" flex relative justify-between h-full ">
-     <div className="chat flex justify-between flex-col border-y border-y-slate-400 ">
+    <div className=" flex  justify-between h-full ">
+     <div className="chat flex flex-1 justify-between flex-col border-y border-y-slate-400 ">
       <div className="top p-5 flex items-center justify-between border-b border-b-slate-400">
        <div className="user flex items-center gap-1">
         <img src="./avatar.png" alt="profile" className="w-14 h-14 rounded-full object-cover" />
