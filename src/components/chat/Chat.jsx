@@ -11,8 +11,8 @@ const Chat = () => {
  return (
   <>
    <div className="chatContainer">
-    <div className=" flex">
-     <div className="chat flex-1 border-y border-y-slate-400 ">
+    <div className=" flex relative justify-between h-full ">
+     <div className="chat flex justify-between flex-col border-y border-y-slate-400 ">
       <div className="top p-5 flex items-center justify-between border-b border-b-slate-400">
        <div className="user flex items-center gap-1">
         <img src="./avatar.png" alt="profile" className="w-14 h-14 rounded-full object-cover" />
@@ -27,21 +27,25 @@ const Chat = () => {
         <img src="./info.png" alt="phone" className="w-5 h-5" />
        </div>
       </div>
-      <div className="center"></div>
-      <div className="bottom p-1 gap-1 flex items-center justify-between border-t-slate-400 border-t">
+      <div className="center p-5 flex-grow">center</div>
+      <div className="bottom p-1 gap-1 flex items-center justify-between border-t-slate-400 border-t mb-auto">
        <div className="icons gap-1 flex ">
-        <div className="emoji">
-         <img src="./emoji.png" alt="emoji" className="w-5 h-5" onClick={() => setShowEmoji((prev) => !prev)} />
-         <EmojiPicker open={showEmoji} onEmojiClick={handleEmoji} className="max-w-90 max-h-80 bg-white rounded shadow-md z-40" />
-        </div>
+        
         <img src="./img.png" alt="img" className="w-5 h-5 cursor-pointer" />
         <img src="./camera.png" alt="camera" className="w-5 h-5 cursor-pointer" />
         <img src="./mic.png" alt="mic" className="w-5 h-5 cursor-pointer" />
        </div>
-      </div>
+       <div className="emoji relative">
+         <img src="./emoji.png" alt="emoji" className="w-5 h-5" onClick={() => setShowEmoji((prev) => !prev)} />
+         <div className="picker">
+         <EmojiPicker open={showEmoji} onEmojiClick={handleEmoji} className="max-w-90 max-h-80 rounded shadow-md z-40" />
+         {/* <EmojiPicker open={showEmoji} onEmojiClick={handleEmoji} className="absolute bottom-5 left-0" /> */}
+         </div>
+        </div>
       <input type="text" name="msg" id="msg" placeholder="Type a message..." className="flex-1 bg-slate-700 border-none outline-none text-white p-2 rounded-3xl text-sm"value={text} onChange={(e)=>setText(e.target.value)}/>
 
       <button className="sendBtn bg-green-700 text-white py-2 px-4 rounded-3xl cursor-pointer">Send</button>
+      </div>
      </div>
     </div>
    </div>
