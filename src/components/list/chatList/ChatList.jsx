@@ -6,7 +6,7 @@ const ChatList = () => {
  const [addMode, setAddMode] = useState(false);
  return (
   //container
-  <div className="chatlist flex-1 overflow-scroll">
+  <div className="chatlist flex-1 overflow-y-scroll scroll-my-px">
    {/* search Bar */}
    <div className="search flex items-center gap-5 p-4">
     <div className="searchbar flex-1 bg-slate-800 flex items-center gap-5 rounded-xl p-2">
@@ -19,10 +19,48 @@ const ChatList = () => {
    <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => navigate("/chat")}>
     <img src="./avatar.png" alt="profile" className="w-12 h-12 rounded-full object-cover" />
     <div className="texts flex gap-2 flex-col">
+     <span className="font-medium">Kitty</span>
+     <p className="text-sm font-light">Hello</p>
+    </div>
+   </div>
+   {/* CARD END*/}
+   {/* CARD */}
+   <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => navigate("/chat")}>
+    <img src="./avatar.png" alt="profile" className="w-12 h-12 rounded-full object-cover" />
+    <div className="texts flex gap-2 flex-col">
      <span className="font-medium">Pratik</span>
      <p className="text-sm font-light">Hello</p>
     </div>
    </div>
+   {/* CARD END*/}
+   {/* CARD */}
+   <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => navigate("/chat")}>
+    <img src="./avatar.png" alt="profile" className="w-12 h-12 rounded-full object-cover" />
+    <div className="texts flex gap-2 flex-col">
+     <span className="font-medium">Pratik</span>
+     <p className="text-sm font-light">Hello</p>
+    </div>
+   </div>
+   {/* CARD END*/}
+   {/* CARD */}
+   <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => navigate("/chat")}>
+    <img src="./avatar.png" alt="profile" className="w-12 h-12 rounded-full object-cover" />
+    <div className="texts flex gap-2 flex-col">
+     <span className="font-medium">Pratik</span>
+     <p className="text-sm font-light">Hello</p>
+    </div>
+   </div>
+   {/* CARD END*/}
+
+   {/* CARD */}
+   <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => navigate("/chat")}>
+    <img src="./avatar.png" alt="profile" className="w-12 h-12 rounded-full object-cover" />
+    <div className="texts flex gap-2 flex-col">
+     <span className="font-medium">Pratik</span>
+     <p className="text-sm font-light">Hello</p>
+    </div>
+   </div>
+   {/* CARD END*/}
   </div>
  );
 };
