@@ -1,5 +1,5 @@
 import EmojiPicker from "emoji-picker-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Chat = () => {
@@ -9,6 +9,10 @@ const Chat = () => {
   setText((prev) => prev + e.emoji);
   setShowEmoji(false);
  };
+ const endRef = useRef(null);
+ useEffect(() => {
+  endRef.current?.scrollIntoView({ behavior: "smooth" });
+ });
  const navigate = useNavigate();
  return (
   <>
@@ -67,6 +71,7 @@ const Chat = () => {
          <span>1 min ago</span>
         </div>
        </div>
+
        <div className="messageMy max-w-48 flex gap-1 flex-col self-end">
         <div className="texts">
          <p className="bg-green-900 rounded-md p-1">messages reply</p>
@@ -116,6 +121,7 @@ const Chat = () => {
         </div>
        </div>
        {/* card end */}
+       <div ref={endRef}></div>
       </div>
 
       <div className="bottom p-1 gap-1 flex items-center justify-between border-t-slate-400 border-t mb-auto">

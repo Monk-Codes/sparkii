@@ -68,6 +68,7 @@ const ChatDetail = () => {
        </div>
        {/* Setting end */}
        <button className=" bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2">Block User</button>
+       <button className=" bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2">Logout</button>
       </div>
      </div>
     </div>
