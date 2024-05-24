@@ -4,6 +4,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 import { auth, db } from "../../backend/firebase";
 import { doc, setDoc } from "firebase/firestore";
+import upload from "../../backend/upload";
 
 const LoginPage = () => {
  const [avatar, setAvatar] = useState({
@@ -17,38 +18,54 @@ const LoginPage = () => {
     file: e.target.files[0],
     url: URL.createObjectURL(e.target.files[0]),
    });
-  } else
-   () => {
-    setAvatar({
-     file: null,
-     url: "",
-    });
-   };
+  }
  };
  // Login
- const handleLogin = (e) => {
+ const handleLogin = async (e) => {
   e.preventDefault();
-  toast.success("Login successful");
+  const formData = new FormData(e.target);
+  const { email, password } = Object.fromEntries(formData);
+  try {
+   await signInWithEmailAndPassword(auth, email, password);
+   toast.success("Login successful");
+  } catch (error) {
+   console.log(error);
+   toast.error(error.message);
+  }
  };
  //  Registrations for new users
  const handleRegister = async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const { username, password, email } = Object.fromEntries(formData);
+  // VALIDATE INPUTS
+  if (!username || !email || !password) return toast.warn("Please enter inputs!");
+  if (!avatar.file) return toast.warn("Please upload an avatar!");
+  // // VALIDATE UNIQUE USERNAME
+  // const usersRef = collection(db, "users");
+  // const q = query(usersRef, where("username", "==", username));
+  // const querySnapshot = await getDocs(q);
+  // if (!querySnapshot.empty) {
+  //  return toast.warn("Select another username");
+  // }
   try {
    const res = await createUserWithEmailAndPassword(auth, email, password);
-   await setDoc(db, "users", res.user.uid),
-    {
-     username,
-     email,
-     id: res.user.uid,
-     blocked: [],
-    };
+   const imgUrl = await upload(avatar.file);
+   await setDoc(doc(db, "users", res.user.uid), {
+    username,
+    email,
+    avatar: imgUrl,
+    id: res.user.uid,
+    blocked: [],
+   });
+   await setDoc(doc(db, "userchats", res.user.uid), {
+    chats: [],
+   });
+   toast.success("Account created successfully");
   } catch (error) {
    console.log(error);
    toast.error(error.message);
   }
-  toast.success("Account created successfully");
  };
  //
  return (
@@ -57,9 +74,9 @@ const LoginPage = () => {
    <div className="item  flex-1 flex flex-col items-center gap-2">
     <h2>Welcome Back</h2>
     <form className="flex flex-col items-center justify-center gap-3 " onSubmit={handleLogin}>
-     <input type="text" placeholder="Email" name="email" />
-     <input type="text" placeholder="Password" name="password" />
-     <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">SignIn</button>
+     <input type="email" placeholder="Email" name="email" />
+     <input type="password" placeholder="Password" name="password" />
+     <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl ">Sign In</button>
     </form>
    </div>
    {/* Separator */}
@@ -74,9 +91,9 @@ const LoginPage = () => {
      </label>
      <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} />
      <input type="text" placeholder="Username" name="username" />
-     <input type="text" placeholder="Email" name="email" />
+     <input type="email" placeholder="Email" name="email" />
      <input type="password" placeholder="Password" name="password" />
-     <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">SignUp</button>
+     <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">Sign Up </button>
     </form>
    </div>
   </div>
