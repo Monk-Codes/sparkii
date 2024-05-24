@@ -13,6 +13,7 @@ body {
  align-items: center;
  justify-content: center;
  height: 100dvh;
+ color: white;
 }
 .container {
  width: 100dvw;
@@ -44,4 +45,5 @@ label {
  justify-content: space-between;
  cursor: pointer;
  text-decoration: wavy;
+ color: white;
 }
