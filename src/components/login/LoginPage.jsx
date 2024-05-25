@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "fire
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { auth, db } from "../../backend/firebase";
-import { doc, setDoc } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import upload from "../../backend/upload";
 
 const LoginPage = () => {
@@ -41,13 +41,13 @@ const LoginPage = () => {
   // VALIDATE INPUTS
   if (!username || !email || !password) return toast.warn("Please enter inputs!");
   if (!avatar.file) return toast.warn("Please upload an avatar!");
-  // // VALIDATE UNIQUE USERNAME
-  // const usersRef = collection(db, "users");
-  // const q = query(usersRef, where("username", "==", username));
-  // const querySnapshot = await getDocs(q);
-  // if (!querySnapshot.empty) {
-  //  return toast.warn("Select another username");
-  // }
+  // VALIDATE UNIQUE USERNAME
+  const usersRef = collection(db, "users");
+  const q = query(usersRef, where("username", "==", username));
+  const querySnapshot = await getDocs(q);
+  if (!querySnapshot.empty) {
+   return toast.warn("Select another username");
+  }
   try {
    const res = await createUserWithEmailAndPassword(auth, email, password);
    const imgUrl = await upload(avatar.file);

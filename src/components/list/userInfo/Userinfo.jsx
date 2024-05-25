@@ -1,9 +1,13 @@
+import useUserStore from "../../../backend/userStore";
+
 const Userinfo = () => {
+ const { currentUser } = useUserStore();
+
  return (
   <div className="userInfo p-5 flex items-center justify-between">
    <div className="user flex items-center gap-5">
-    <img src="./avatar.png" alt="profile" className="w-12 h-12 rounded-full object-cover" />
-    <h2>Pratik</h2>
+    <img src={currentUser.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
+    <h2>{currentUser.username}</h2>
    </div>
    <div className="icons flex gap-5 cursor-pointer">
     <img src="./more.png" alt="more" className="w-5 h-5 " />

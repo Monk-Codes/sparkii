@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { auth } from "../../backend/firebase";
 
 const ChatDetail = () => {
  const navigate = useNavigate();
@@ -68,7 +69,9 @@ const ChatDetail = () => {
        </div>
        {/* Setting end */}
        <button className=" bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2">Block User</button>
-       <button className=" bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2">Logout</button>
+       <button className=" bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2" onClick={() => auth.signOut()}>
+        Logout
+       </button>
       </div>
      </div>
     </div>
