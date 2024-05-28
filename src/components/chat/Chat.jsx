@@ -5,11 +5,16 @@ import { useNavigate } from "react-router-dom";
 import { db } from "../../backend/firebase";
 import { useChatStore } from "../../backend/chatStore";
 import useUserStore from "../../backend/userStore";
+import upload from "../../backend/upload";
 
 const Chat = () => {
  const [showEmoji, setShowEmoji] = useState(false);
  const [text, setText] = useState("");
  const [chat, setChat] = useState();
+ const [img, setImg] = useState({
+  file: null,
+  url: "",
+ });
 
  const { chatId, user } = useChatStore();
  const { currentUser } = useUserStore();
@@ -21,7 +26,15 @@ const Chat = () => {
   setText((prev) => prev + e.emoji);
   setShowEmoji(false);
  };
-
+ // Handle Avatar Upload
+ const handleImg = (e) => {
+  if (e.target.files[0]) {
+   setImg({
+    file: e.target.files[0],
+    url: URL.createObjectURL(e.target.files[0]),
+   });
+  }
+ };
  //unsub
  useEffect(() => {
   const unSub = onSnapshot(doc(db, "chats", chatId), (res) => {
@@ -39,12 +52,17 @@ const Chat = () => {
  //Handle send
  const handleSend = async () => {
   if (text === "") return;
+  let imgUrl = null;
   try {
+   if (img.file) {
+    imgUrl = await upload(img.file);
+   }
    await updateDoc(doc(db, "chats", chatId), {
     messages: arrayUnion({
      senderId: currentUser.id,
      text,
      createdAt: new Date(),
+     ...(imgUrl && { img: imgUrl }),
     }),
    });
    const userIDs = [currentUser.id, user.id];
@@ -63,6 +81,11 @@ const Chat = () => {
   } catch (error) {
    console.log(error);
   }
+  setImg({
+   file: null,
+   url: "",
+  });
+  setText("");
  };
 
  return (
@@ -89,28 +112,32 @@ const Chat = () => {
       <div className="center p-5 flex-1 overflow-y-scroll scroll-my-px scroll-smooth snap-proximity snap-y snap-end flex flex-col gap-3">
        {/* message card */}
        {chat?.messages?.map((message) => (
-        <div className="message max-w-48 flex gap-1 flex-col self-start" key={message?.createdAt}>
+        <div className={`message max-w-48 flex gap-1 flex-col ${message.senderId === currentUser.id ? "self-end" : "self-start"}`} key={message?.createdAt}>
          <div className="texts ">
           {message.img && <img src={message.img} alt="image" />}
-          <p className="bg-slate-900 rounded-md p-1">{message.text}</p>
+          <p className={`${message.senderId === currentUser.id ? "bg-slate-600" : "bg-slate-400"} rounded-md p-1`}>{message.text}</p>
           <span>1 min ago</span>
          </div>
         </div>
        ))}
-
-       <div className="messageMy max-w-48 flex gap-1 flex-col self-end">
-        <div className="texts">
-         <p className="bg-green-900 rounded-md p-1">messages reply</p>
-         <span>1 min ago</span>
+       {img.url && (
+        <div className="message">
+         <div className="texts">
+          <img src={img.url} alt="img" />
+         </div>
         </div>
-       </div>
+       )}
+
        {/* card end */}
        <div ref={endRef}></div>
       </div>
 
       <div className="bottom p-1 gap-1 flex items-center justify-between border-t-slate-400 border-t mb-auto">
        <div className="icons gap-1 flex ">
-        <img src="./img.png" alt="img" className="w-5 h-5 cursor-pointer" />
+        <label htmlFor="file">
+         <img src="./img.png" alt="img" className="w-5 h-5 cursor-pointer" />
+        </label>
+        <input type="file" id="file" className="hidden" onChange={handleImg} />
         <img src="./camera.png" alt="camera" className="w-5 h-5 cursor-pointer" />
         <img src="./mic.png" alt="mic" className="w-5 h-5 cursor-pointer" />
        </div>

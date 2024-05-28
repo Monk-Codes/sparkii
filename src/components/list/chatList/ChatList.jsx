@@ -92,7 +92,7 @@ const ChatList = () => {
     chats: userChats,
    });
    changeChat(chat.chatId, chat.user);
-   navigate("chat");
+   navigate("/chat");
   } catch (error) {
    console.log(error);
   }
