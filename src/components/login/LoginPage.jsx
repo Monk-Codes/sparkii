@@ -5,8 +5,10 @@ import { toast } from "react-toastify";
 import { auth, db } from "../../backend/firebase";
 import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
 import upload from "../../backend/upload";
+import { useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+ const navigate = useNavigate();
  const [avatar, setAvatar] = useState({
   file: null,
   url: "",
@@ -30,6 +32,7 @@ const LoginPage = () => {
   try {
    await signInWithEmailAndPassword(auth, email, password);
    toast.success("Login successful");
+   navigate("/");
   } catch (error) {
    console.error(error);
    toast.error(error.message);

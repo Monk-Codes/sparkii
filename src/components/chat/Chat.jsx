@@ -16,7 +16,7 @@ const Chat = () => {
   url: "",
  });
 
- const { chatId, user } = useChatStore();
+ const { chatId, user, isCurrentUserBlocked, isReceiverBlocked } = useChatStore();
  const { currentUser } = useUserStore();
  const endRef = useRef(null);
  const navigate = useNavigate();
@@ -96,9 +96,9 @@ const Chat = () => {
       <div className="top p-5 flex items-center justify-between border-b border-b-slate-400">
        <img src="./angle-left.svg" alt="back" onClick={() => navigate(-1)} className="cursor-pointer" />
        <div className="user flex items-center gap-1">
-        <img src="./avatar.png" alt="profile" className="w-14 h-14 rounded-full object-cover cursor-pointer" onClick={() => navigate("/detail")} />
+        <img src={user?.avatar || "./avatar.png"} alt="profile" className="w-14 h-14 rounded-full object-cover cursor-pointer" onClick={() => navigate("/detail")} />
         <div className="texts flex gap-1 flex-col">
-         <span className="text-lg font-bold">Kitty</span>
+         <span className="text-lg font-bold">{user?.username}</span>
          <p className="text-sm font-light text-gray-400">message</p>
         </div>
        </div>
@@ -147,9 +147,18 @@ const Chat = () => {
          <EmojiPicker open={showEmoji} onEmojiClick={handleEmoji} className="max-w-90 max-h-80 rounded shadow-md z-40" />
         </div>
        </div>
-       <input type="text" name="msg" id="msg" placeholder="Type a message..." className="flex-1 bg-slate-700 border-none outline-none text-white p-2 rounded-3xl text-sm" value={text} onChange={(e) => setText(e.target.value)} />
+       <input
+        type="text"
+        name="msg"
+        id="msg"
+        placeholder={isCurrentUserBlocked || isReceiverBlocked ? "You cannot send a message" : "Type a message..."}
+        className="flex-1 bg-slate-700 border-none outline-none text-white p-2 rounded-3xl text-sm disabled:cursor-not-allowed"
+        disabled={isCurrentUserBlocked || isReceiverBlocked}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+       />
 
-       <button className="sendBtn bg-green-700 text-white py-2 px-4 rounded-3xl cursor-pointer" onClick={handleSend}>
+       <button className="sendBtn bg-green-700 text-white py-2 px-4 rounded-3xl cursor-pointer disabled:cursor-not-allowed" disabled={isCurrentUserBlocked || isReceiverBlocked} onClick={handleSend}>
         Send
        </button>
       </div>
