@@ -8,8 +8,10 @@ import { useEffect } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./backend/firebase";
 import useUserStore from "./backend/userStore";
+import { useChatStore } from "./backend/chatStore";
 const App = () => {
  const { currentUser, isLoading, fetchUserInfo } = useUserStore();
+ const { chatId } = useChatStore();
 
  useEffect(() => {
   const unsub = onAuthStateChanged(auth, (user) => {
@@ -29,8 +31,8 @@ const App = () => {
       <Routes>
        <>
         <Route path="/" element={<List />} />
-        <Route path="/chat" element={<Chat />} />
-        <Route path="/detail" element={<ChatDetail />} />
+        {chatId && <Route path="/chat" element={<Chat />} />}
+        {chatId && <Route path="/detail" element={<ChatDetail />} />}
        </>
       </Routes>
      </BrowserRouter>

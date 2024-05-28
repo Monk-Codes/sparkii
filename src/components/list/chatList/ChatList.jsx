@@ -2,14 +2,17 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AddUser from "./addUser/AddUser";
 import useUserStore from "../../../backend/userStore";
-import { doc, getDoc, setDoc, onSnapshot } from "firebase/firestore";
+import { doc, getDoc, setDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../backend/firebase";
+import { useChatStore } from "../../../backend/chatStore";
 
 const ChatList = () => {
  const navigate = useNavigate();
  const [addMode, setAddMode] = useState(false);
  const [chats, setChats] = useState([]);
  const { currentUser } = useUserStore();
+ const { chatId, changeChat } = useChatStore();
+ console.log(chatId);
 
  useEffect(() => {
   if (!currentUser || !currentUser.id) {
@@ -75,6 +78,25 @@ const ChatList = () => {
   };
  }, [currentUser]);
 
+ // Handle Select
+ const handleSelect = async (chat) => {
+  const userChats = chats.map((item) => {
+   const { user, ...rest } = item;
+   return rest;
+  });
+  const chatIndex = userChats.findIndex((item) => item.chatId === chat.chatId);
+  userChats[chatIndex].isSeen = true;
+  const userChatsRef = doc(db, "userchats", currentUser.id);
+  try {
+   await updateDoc(userChatsRef, {
+    chats: userChats,
+   });
+   changeChat(chat.chatId, chat.user);
+   navigate("chat");
+  } catch (error) {
+   console.log(error);
+  }
+ };
  return (
   <div className="chatlist flex-1 flex flex-col overflow-y-scroll scroll-my-px text-center">
    <div className="search flex items-center gap-2 p-4 justify-center">
@@ -86,7 +108,7 @@ const ChatList = () => {
    </div>
    {addMode && <AddUser />}
    {chats.map((chat) => (
-    <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => navigate("/chat")} key={chat.chatId}>
+    <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
      <img src={chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
      <div className="texts flex gap-2 flex-col">
       <span className="font-medium">{chat.user.username}</span>
