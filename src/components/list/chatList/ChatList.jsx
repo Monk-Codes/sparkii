@@ -7,11 +7,12 @@ import { db } from "../../../backend/firebase";
 import { useChatStore } from "../../../backend/chatStore";
 
 const ChatList = () => {
- const navigate = useNavigate();
  const [addMode, setAddMode] = useState(false);
  const [chats, setChats] = useState([]);
+ const [input, setInput] = useState("");
  const { currentUser } = useUserStore();
  const { chatId, changeChat } = useChatStore();
+ const navigate = useNavigate();
  console.log(chatId);
 
  useEffect(() => {
@@ -81,7 +82,7 @@ const ChatList = () => {
  // Handle Select
  const handleSelect = async (chat) => {
   const userChats = chats.map((item) => {
-   const { user, ...rest } = item;
+   const { ...rest } = item;
    return rest;
   });
   const chatIndex = userChats.findIndex((item) => item.chatId === chat.chatId);
@@ -97,17 +98,23 @@ const ChatList = () => {
    console.log(error);
   }
  };
+
+ // Filter chat
+ const filteredChats = chats.filter((e) => e.user.username.toLowerCase().includes(input.toLowerCase()));
+
  return (
   <div className="chatlist flex-1 flex flex-col overflow-y-scroll scroll-my-px text-center">
    <div className="search flex items-center gap-2 p-4 justify-center">
     <div className="searchbar flex-1 bg-slate-800 flex items-center gap-2 rounded-xl max-w-xs">
      <img src="./search.png" alt="search" className="h-4 w-4 ml-4" />
-     <input type="text" placeholder="search" className="bg-transparent rounded-none outline-none text-white flex-1" />
+     <input type="text" placeholder="search" className="bg-transparent rounded-none outline-none text-white flex-1" onChange={(e) => setInput(e.target.value)} />
     </div>
     <img src={addMode ? "./minus.png" : "./plus.png"} alt="plus" className="h-8 w-8 bg-slate-800 p-2 cursor-pointer rounded-xl" onClick={() => setAddMode((prev) => !prev)} />
    </div>
+
    {addMode && <AddUser />}
-   {chats.map((chat) => (
+
+   {filteredChats.map((chat) => (
     <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
      <img src={chat.user.blocked.includes(currentUser.id) ? "./avatar.png" : chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
      <div className="texts flex gap-2 flex-col">

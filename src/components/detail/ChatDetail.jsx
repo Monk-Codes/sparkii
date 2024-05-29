@@ -8,31 +8,42 @@ const ChatDetail = () => {
  const { user, isCurrentUserBlocked, isReceiverBlocked, changeBlock, resetChat } = useChatStore();
  const { currentUser } = useUserStore();
  const navigate = useNavigate();
- // Handle Block
+
+ // Handle Block/Unblock
  const handleBlock = async () => {
   if (!user) return;
   const userDocRef = doc(db, "users", currentUser.id);
   try {
-   await updateDoc(userDocRef, {
-    blocked: isReceiverBlocked ? arrayRemove(user.id) : arrayUnion(user.id),
-   });
+   if (isReceiverBlocked) {
+    // Unblock the user
+    await updateDoc(userDocRef, {
+     blocked: arrayRemove(user.id),
+    });
+   } else {
+    // Block the user
+    await updateDoc(userDocRef, {
+     blocked: arrayUnion(user.id),
+    });
+   }
    changeBlock();
   } catch (error) {
    console.log(error);
   }
  };
+
  // Handle Logout
  const handleLogout = () => {
   auth.signOut();
   resetChat();
  };
+
  return (
   <div className="chatContainer">
    <div className="flex h-full">
     <div className="overflow-y-scroll scroll-my-px scroll-smooth snap-proximity flex flex-1 flex-col border-y-slate-400 border-y">
-     <div className="detail flex flex-col p-1 ">
-      <div className="user flex  gap-1 p-1 w-full justify-between">
-       <img src="./angle-left.svg" alt="back" onClick={() => navigate(-1)} className="cursor-pointer " />
+     <div className="detail flex flex-col p-1">
+      <div className="user flex gap-1 p-1 w-full justify-between">
+       <img src="./angle-left.svg" alt="back" onClick={() => navigate(-1)} className="cursor-pointer" />
        <div className="justify-between flex items-center gap-3 p-3">
         <img src={user?.avatar || "./avatar.png"} alt="profile" className="w-14 h-14 rounded-full object-cover" />
         <div className="texts flex gap-1 flex-col">
@@ -50,9 +61,8 @@ const ChatDetail = () => {
         </div>
        </div>
        {/* Setting end */}
-
        {/* CHAT SETTINGS */}
-       <div className="option w-full flex flex-col  text-center justify-center">
+       <div className="option w-full flex flex-col text-center justify-center">
         <div className="title flex items-center justify-between">
          <span>Shared photos</span>
          <img src="./arrowDown.png" alt="setting" className="w-8 h-8 bg-slate-800 p-2 rounded-full cursor-pointer" />
@@ -91,10 +101,10 @@ const ChatDetail = () => {
         </div>
        </div>
        {/* Setting end */}
-       <button className=" bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2" onClick={handleBlock}>
-        {isCurrentUserBlocked ? "You are Blocked!" : isReceiverBlocked ? "User blocked" : "Block User"}{" "}
+       <button className="bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2" onClick={handleBlock}>
+        {isCurrentUserBlocked ? "You are Blocked!" : isReceiverBlocked ? "Unblock User" : "Block User"}
        </button>
-       <button className=" bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2" onClick={handleLogout}>
+       <button className="bg-red-400 hover:bg-red-500 max-w-48 items-center cursor-pointer rounded-full p-2" onClick={handleLogout}>
         Logout
        </button>
       </div>
