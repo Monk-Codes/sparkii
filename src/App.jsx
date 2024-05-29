@@ -36,7 +36,7 @@ const App = () => {
        {chatId && <Route path="/detail" element={<ChatDetail />} />}
       </>
      ) : (
-      <Route path="*" element={<LoginPage />} />
+      <Route path="/login" element={<LoginPage />} />
      )}
     </Routes>
     <Notification />

@@ -23,6 +23,7 @@ const ChatList = () => {
   }
   return formatDistanceToNow(date, { addSuffix: true });
  };
+
  useEffect(() => {
   if (!currentUser || !currentUser.id) {
    console.error("Current user is not set or does not have an ID");
@@ -87,7 +88,6 @@ const ChatList = () => {
   };
  }, [currentUser]);
 
- // Handle Select
  const handleSelect = async (chat) => {
   const userChats = chats.map((item) => {
    const { ...rest } = item;
@@ -107,7 +107,6 @@ const ChatList = () => {
   }
  };
 
- // Filter chat
  const filteredChats = chats.filter((e) => e.user.username.toLowerCase().includes(input.toLowerCase()));
 
  return (
@@ -121,19 +120,16 @@ const ChatList = () => {
    </div>
    {addMode && <AddUser />}
    {filteredChats.map((chat) => (
-    <>
-     <div className="item flex items-center justify-between gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
-      <div className="flex justify-between gap-4">
-       <img src={chat.user.blocked.includes(currentUser.id) ? "./avatar.png" : chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
-       <div className="texts flex gap-2 flex-col">
-        <span className="font-medium">{chat.user.blocked.includes(currentUser.id) ? "User" : chat.user.username}</span>
-        <p className="text-sm font-light">{chat.lastMessage}</p>
-       </div>
+    <div className="item flex items-center justify-between gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
+     <div className="flex justify-between gap-4">
+      <img src={chat.user.blocked.includes(currentUser.id) ? "./avatar.png" : chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
+      <div className="texts flex gap-2 flex-col">
+       <span className="font-medium">{chat.user.blocked.includes(currentUser.id) ? "User" : chat.user.username}</span>
+       <p className="text-sm font-light">{chat.lastMessage}</p>
       </div>
-      <div></div>
-      <span className="self-center">{formatDistanceToNowCustom(chat.updatedAt)}</span>
      </div>
-    </>
+     <span className="self-center">{formatDistanceToNowCustom(chat.updatedAt)}</span>
+    </div>
    ))}
   </div>
  );

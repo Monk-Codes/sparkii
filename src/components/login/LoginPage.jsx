@@ -26,14 +26,14 @@ const LoginPage = () => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const { email, password } = Object.fromEntries(formData.entries());
-  console.log("Login attempt with email:", email); // Add log for debugging
+  console.log("Login attempt with email:", email);
   try {
    await signInWithEmailAndPassword(auth, email, password);
-   toast.success("Login successful");
    navigate("/");
+   toast.success("Login successful");
   } catch (error) {
    console.error("Login error:", error);
-   toast.error(error.message);
+   toast.error("Please login with correct credentials");
   }
  };
 
@@ -54,9 +54,9 @@ const LoginPage = () => {
 
   try {
    const res = await createUserWithEmailAndPassword(auth, email, password);
-   console.log("User created with UID:", res.user.uid); // Add log for debugging
+   console.log("User created with UID:", res.user.uid);
    const imgUrl = await upload(avatar.file);
-   console.log("Avatar uploaded to URL:", imgUrl); // Add log for debugging
+   console.log("Avatar uploaded to URL:", imgUrl);
    await setDoc(doc(db, "users", res.user.uid), {
     username,
     email,
@@ -67,8 +67,9 @@ const LoginPage = () => {
    await setDoc(doc(db, "userchats", res.user.uid), {
     chats: [],
    });
-   toast.success("Account created successfully");
    navigate("/");
+   toast.success("Account created successfully");
+   toast.success("You can Login now");
   } catch (error) {
    console.error("Registration error:", error);
    toast.error(error.message);
@@ -81,8 +82,8 @@ const LoginPage = () => {
     <h2>Welcome Back</h2>
     <form className="flex flex-col items-center justify-center gap-1" onSubmit={handleLogin}>
      <input type="email" placeholder="Email" name="email" required />
-     <input type="password" placeholder="Password" name="password" required />
-     <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">Sign In</button>
+     <input type="password" placeholder="Password" name="password" required minLength={6} />
+     <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">Log In</button>
     </form>
    </div>
 
@@ -95,10 +96,10 @@ const LoginPage = () => {
       <img src={avatar.url || "./avatar.png"} alt="avatar" className="w-12 h-12 rounded-full object-cover opacity-40" />
       <span>Upload an Image</span>
      </label>
-     <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} required />
-     <input type="text" placeholder="Username" name="username" required />
+     <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} />
+     <input type="text" placeholder="Username" name="username" required minLength={6} />
      <input type="email" placeholder="Email" name="email" required />
-     <input type="password" placeholder="Password" name="password" required />
+     <input type="password" placeholder="Password" name="password" required minLength={6} />
      <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">Sign Up</button>
     </form>
    </div>
