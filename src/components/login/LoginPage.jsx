@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { toast } from "react-toastify";
@@ -14,7 +13,6 @@ const LoginPage = () => {
   url: "",
  });
 
- // Handle Avatar Upload
  const handleAvatar = (e) => {
   if (e.target.files[0]) {
    setAvatar({
@@ -24,32 +22,29 @@ const LoginPage = () => {
   }
  };
 
- // Handle Login
  const handleLogin = async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const { email, password } = Object.fromEntries(formData.entries());
+  console.log("Login attempt with email:", email); // Add log for debugging
   try {
    await signInWithEmailAndPassword(auth, email, password);
    toast.success("Login successful");
    navigate("/");
   } catch (error) {
-   console.error(error);
+   console.error("Login error:", error);
    toast.error(error.message);
   }
  };
 
- // Handle Registration
  const handleRegister = async (e) => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const { username, password, email } = Object.fromEntries(formData.entries());
 
-  // Validate Inputs
   if (!username || !email || !password) return toast.warn("Please enter all inputs!");
   if (!avatar.file) return toast.warn("Please upload an avatar!");
 
-  // Validate Unique Username
   const usersRef = collection(db, "users");
   const q = query(usersRef, where("username", "==", username));
   const querySnapshot = await getDocs(q);
@@ -59,7 +54,9 @@ const LoginPage = () => {
 
   try {
    const res = await createUserWithEmailAndPassword(auth, email, password);
+   console.log("User created with UID:", res.user.uid); // Add log for debugging
    const imgUrl = await upload(avatar.file);
+   console.log("Avatar uploaded to URL:", imgUrl); // Add log for debugging
    await setDoc(doc(db, "users", res.user.uid), {
     username,
     email,
@@ -71,31 +68,29 @@ const LoginPage = () => {
     chats: [],
    });
    toast.success("Account created successfully");
+   navigate("/");
   } catch (error) {
-   console.error(error);
+   console.error("Registration error:", error);
    toast.error(error.message);
   }
  };
 
  return (
   <div className="login w-full h-full flex flex-col items-center gap-2 p-10">
-   {/* Login Form */}
    <div className="item flex-1 flex flex-col items-center gap-2">
     <h2>Welcome Back</h2>
-    <form className="flex flex-col items-center justify-center gap-3" onSubmit={handleLogin}>
+    <form className="flex flex-col items-center justify-center gap-1" onSubmit={handleLogin}>
      <input type="email" placeholder="Email" name="email" required />
      <input type="password" placeholder="Password" name="password" required />
      <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">Sign In</button>
     </form>
    </div>
 
-   {/* Separator */}
    <div className="separator w-1/2 border border-gray-800 my-4"></div>
 
-   {/* Registration Form */}
    <div className="item flex-1 flex flex-col items-center gap-2">
     <h2>Create an Account</h2>
-    <form className="flex flex-col items-center justify-center gap-3" onSubmit={handleRegister}>
+    <form className="flex flex-col items-center justify-center gap-1" onSubmit={handleRegister}>
      <label htmlFor="file">
       <img src={avatar.url || "./avatar.png"} alt="avatar" className="w-12 h-12 rounded-full object-cover opacity-40" />
       <span>Upload an Image</span>
