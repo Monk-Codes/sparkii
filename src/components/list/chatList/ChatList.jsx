@@ -123,12 +123,12 @@ const ChatList = () => {
     <div className="item flex items-center justify-between gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
      <div className="flex justify-between gap-4">
       <img src={chat.user.blocked.includes(currentUser.id) ? "./avatar.png" : chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
-      <div className="texts flex gap-2 flex-col">
+      <div className="texts flex gap-2 flex-col ">
        <span className="font-medium">{chat.user.blocked.includes(currentUser.id) ? "User" : chat.user.username}</span>
-       <p className="text-sm font-light">{chat.lastMessage}</p>
+       <p className="text-xs font-light ">{chat.lastMessage}</p>
       </div>
      </div>
-     <span className="self-center">{formatDistanceToNowCustom(chat.updatedAt)}</span>
+     <span className="self-center text-xs">{formatDistanceToNowCustom(chat.updatedAt)}</span>
     </div>
    ))}
   </div>
