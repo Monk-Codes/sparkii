@@ -26,7 +26,7 @@ const App = () => {
  return (
   <>
    <div className="container">
-    {currentUser ? (
+    {/* {currentUser ? (
      <BrowserRouter>
       <Routes>
        <>
@@ -39,7 +39,10 @@ const App = () => {
     ) : (
      <LoginPage />
     )}
-    <Notification />
+    <Notification /> */}
+    <BrowserRouter>
+     <LoginPage />
+    </BrowserRouter>
    </div>
   </>
  );
