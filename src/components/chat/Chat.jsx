@@ -6,6 +6,7 @@ import { db } from "../../backend/firebase";
 import { useChatStore } from "../../backend/chatStore";
 import useUserStore from "../../backend/userStore";
 import upload from "../../backend/upload";
+import { formatDistanceToNow } from "date-fns";
 
 const Chat = () => {
  const [showEmoji, setShowEmoji] = useState(false);
@@ -21,8 +22,23 @@ const Chat = () => {
  const endRef = useRef(null);
  const navigate = useNavigate();
 
- console.log("chatId:", chatId);
+ const convertFirestoreTimestampToDate = (timestamp) => {
+  if (timestamp && timestamp.seconds) {
+   return new Date(timestamp.seconds * 1000 + timestamp.nanoseconds / 1000000);
+  } else {
+   return null;
+  }
+ };
+ const formatDistanceToNowCustom = (date) => {
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
 
+  if (seconds < 60) {
+   return `${seconds} seconds`;
+  }
+
+  return formatDistanceToNow(date);
+ };
  useEffect(() => {
   if (!chatId) {
    console.error("chatId is null or undefined");
@@ -30,6 +46,7 @@ const Chat = () => {
   }
 
   const chatDocRef = doc(db, "chats", chatId);
+
   const unSub = onSnapshot(
    chatDocRef,
    (res) => {
@@ -39,9 +56,16 @@ const Chat = () => {
      return;
     }
 
-    const data = res.data();
-    console.log("Chat data:", data);
-    setChat(data);
+    const chatData = res.data();
+    if (chatData && chatData.messages) {
+     chatData.messages.forEach((message) => {
+      const parsedDate = convertFirestoreTimestampToDate(message.createdAt);
+      if (isNaN(parsedDate.getTime())) {
+       console.error("Invalid date:", message.createdAt);
+      }
+     });
+    }
+    setChat(chatData);
    },
    (error) => {
     console.error("Error fetching chat data:", error);
@@ -97,7 +121,7 @@ const Chat = () => {
      if (chatIndex !== -1) {
       userChatsData.chats[chatIndex].lastMessage = text;
       userChatsData.chats[chatIndex].isSeen = id === currentUser.id;
-      userChatsData.chats[chatIndex].updatedAt = Date.now();
+      userChatsData.chats[chatIndex].updatedAt = new Date().toISOString();
       await updateDoc(userChatsRef, { chats: userChatsData.chats });
      } else {
       console.error("Chat ID not found in userChatsData for user:", id);
@@ -137,15 +161,19 @@ const Chat = () => {
      </div>
 
      <div className="center p-5 flex-1 overflow-y-scroll scroll-my-px scroll-smooth snap-proximity snap-y snap-end flex flex-col gap-3">
-      {chat?.messages?.map((message) => (
-       <div className={`message max-w-48 flex gap-1 flex-col ${message.senderId === currentUser.id ? "self-end" : "self-start"}`} key={message?.createdAt}>
-        <div className="texts">
-         {message.img && <img src={message.img} alt="image" />}
-         <p className={`${message.senderId === currentUser.id ? "bg-slate-600" : "bg-slate-400"} rounded-md p-1`}>{message.text}</p>
-         <span>1 min ago</span>
+      {chat?.messages?.map((message) => {
+       const createdAtDate = convertFirestoreTimestampToDate(message.createdAt);
+
+       return (
+        <div className={`message max-w-48 flex gap-1 flex-col ${message.senderId === currentUser.id ? "self-end" : "self-start"}`} key={message?.createdAt}>
+         <div className="texts">
+          {message.img && <img src={message.img} alt="image" />}
+          <p className={`${message.senderId === currentUser.id ? "bg-slate-600" : "bg-slate-400"} rounded-md p-1`}>{message.text}</p>
+          <span>{isNaN(createdAtDate.getTime()) ? "Invalid date" : formatDistanceToNowCustom(createdAtDate)}</span>
+         </div>
         </div>
-       </div>
-      ))}
+       );
+      })}
       {img.url && (
        <div className="message">
         <div className="texts">
