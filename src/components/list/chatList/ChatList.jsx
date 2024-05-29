@@ -5,16 +5,24 @@ import useUserStore from "../../../backend/userStore";
 import { doc, getDoc, setDoc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "../../../backend/firebase";
 import { useChatStore } from "../../../backend/chatStore";
+import { formatDistanceToNow, differenceInSeconds } from "date-fns";
 
 const ChatList = () => {
  const [addMode, setAddMode] = useState(false);
  const [chats, setChats] = useState([]);
  const [input, setInput] = useState("");
  const { currentUser } = useUserStore();
- const { chatId, changeChat } = useChatStore();
+ const { changeChat } = useChatStore();
  const navigate = useNavigate();
- console.log(chatId);
 
+ const formatDistanceToNowCustom = (dateString) => {
+  const date = new Date(dateString);
+  const secondsAgo = differenceInSeconds(new Date(), date);
+  if (secondsAgo < 60) {
+   return `${secondsAgo} seconds ago`;
+  }
+  return formatDistanceToNow(date, { addSuffix: true });
+ };
  useEffect(() => {
   if (!currentUser || !currentUser.id) {
    console.error("Current user is not set or does not have an ID");
@@ -111,17 +119,21 @@ const ChatList = () => {
     </div>
     <img src={addMode ? "./minus.png" : "./plus.png"} alt="plus" className="h-8 w-8 bg-slate-800 p-2 cursor-pointer rounded-xl" onClick={() => setAddMode((prev) => !prev)} />
    </div>
-
    {addMode && <AddUser />}
-
    {filteredChats.map((chat) => (
-    <div className="item flex items-center gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
-     <img src={chat.user.blocked.includes(currentUser.id) ? "./avatar.png" : chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
-     <div className="texts flex gap-2 flex-col">
-      <span className="font-medium">{chat.user.blocked.includes(currentUser.id) ? "User" : chat.user.username}</span>
-      <p className="text-sm font-light">{chat.lastMessage}</p>
+    <>
+     <div className="item flex items-center justify-between gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
+      <div className="flex justify-between gap-4">
+       <img src={chat.user.blocked.includes(currentUser.id) ? "./avatar.png" : chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
+       <div className="texts flex gap-2 flex-col">
+        <span className="font-medium">{chat.user.blocked.includes(currentUser.id) ? "User" : chat.user.username}</span>
+        <p className="text-sm font-light">{chat.lastMessage}</p>
+       </div>
+      </div>
+      <div></div>
+      <span className="self-center">{formatDistanceToNowCustom(chat.updatedAt)}</span>
      </div>
-    </div>
+    </>
    ))}
   </div>
  );
