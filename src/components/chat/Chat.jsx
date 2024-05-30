@@ -142,15 +142,14 @@ const Chat = () => {
 
  return (
   <div className="chatContainer">
-   <div className="flex justify-between h-full">
-    <div className="chat flex flex-1 justify-between flex-col border-y border-y-slate-400">
+   <div className="flex justify-between h-full p-1">
+    <div className="chat flex flex-1 justify-between flex-col border-y rounded-xl border-y-slate-400">
      <div className="top p-5 flex items-center justify-between border-b border-b-slate-400">
       <img src="./angle-left.svg" alt="back" onClick={() => navigate(-1)} className="cursor-pointer" />
       <div className="user flex items-center gap-1">
        <img src={user?.avatar || "./avatar.png"} alt="profile" className="w-14 h-14 rounded-full object-cover cursor-pointer" onClick={() => navigate("/detail")} />
-       <div className="texts flex gap-1 flex-col">
+       <div className="texts flex gap-1">
         <span className="text-lg font-bold">{user?.username}</span>
-        <p className="text-sm font-light text-gray-400">message</p>
        </div>
       </div>
       <div className="icons flex gap-3">
@@ -184,34 +183,36 @@ const Chat = () => {
       <div ref={endRef}></div>
      </div>
 
-     <div className="bottom p-1 gap-1 flex items-center justify-between border-t-slate-400 border-t mb-auto">
-      <div className="icons gap-1 flex">
-       <label htmlFor="file">
-        <img src="./img.png" alt="img" className="w-5 h-5 cursor-pointer" />
-       </label>
-       <input type="file" id="file" className="hidden" onChange={handleImg} />
-       <img src="./camera.png" alt="camera" className="w-5 h-5 cursor-pointer" />
-       <img src="./mic.png" alt="mic" className="w-5 h-5 cursor-pointer" />
-      </div>
-      <div className="emoji relative">
-       <img src="./emoji.png" alt="emoji" className="w-5 h-5" onClick={() => setShowEmoji((prev) => !prev)} />
-       <div className="picker">
-        <EmojiPicker open={showEmoji} onEmojiClick={handleEmoji} className="max-w-90 max-h-80 rounded shadow-md z-40" />
+     <div className="bottom  p-3 border-t-slate-400 border-t">
+      <div className="gap-1 flex items-center justify-between  mb-auto">
+       <div className="icons gap-1 flex">
+        <label htmlFor="file">
+         <img src="./img.png" alt="img" className="w-5 h-5 cursor-pointer" />
+        </label>
+        <input type="file" id="file" className="hidden" onChange={handleImg} />
+        <img src="./camera.png" alt="camera" className="w-5 h-5 cursor-pointer" />
+        <img src="./mic.png" alt="mic" className="w-5 h-5 cursor-pointer" />
        </div>
+       <div className="emoji relative">
+        <img src="./emoji.png" alt="emoji" className="w-5 h-5" onClick={() => setShowEmoji((prev) => !prev)} />
+        <div className="picker">
+         <EmojiPicker open={showEmoji} onEmojiClick={handleEmoji} className="max-w-90 max-h-80 rounded z-40" />
+        </div>
+       </div>
+       <input
+        type="text"
+        name="msg"
+        id="msg"
+        placeholder={isCurrentUserBlocked || isReceiverBlocked ? "You cannot send a message" : "Type a message..."}
+        className="flex-1 bg-slate-700 border-none outline-none text-white p-2 rounded-3xl text-sm disabled:cursor-not-allowed"
+        disabled={isCurrentUserBlocked || isReceiverBlocked}
+        value={text}
+        onChange={(e) => setText(e.target.value)}
+       />
+       <button className="sendBtn bg-green-700 text-white py-1 px-4 rounded-3xl cursor-pointer disabled:cursor-not-allowed" disabled={isCurrentUserBlocked || isReceiverBlocked} onClick={handleSend}>
+        Send
+       </button>
       </div>
-      <input
-       type="text"
-       name="msg"
-       id="msg"
-       placeholder={isCurrentUserBlocked || isReceiverBlocked ? "You cannot send a message" : "Type a message..."}
-       className="flex-1 bg-slate-700 border-none outline-none text-white p-2 rounded-3xl text-sm disabled:cursor-not-allowed"
-       disabled={isCurrentUserBlocked || isReceiverBlocked}
-       value={text}
-       onChange={(e) => setText(e.target.value)}
-      />
-      <button className="sendBtn bg-green-700 text-white py-2 px-4 rounded-3xl cursor-pointer disabled:cursor-not-allowed" disabled={isCurrentUserBlocked || isReceiverBlocked} onClick={handleSend}>
-       Send
-      </button>
      </div>
     </div>
    </div>

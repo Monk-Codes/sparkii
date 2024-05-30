@@ -1,11 +1,13 @@
+import { useNavigate } from "react-router-dom";
 import useUserStore from "../../../backend/userStore";
 
 const Userinfo = () => {
  const { currentUser } = useUserStore();
+ const navigate = useNavigate();
 
  return (
   <div className="userInfo p-5 flex items-center justify-between">
-   <div className="user flex items-center gap-5">
+   <div className="user flex items-center gap-5 cursor-pointer" onClick={() => navigate("/mydetail")}>
     <img src={currentUser.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
     <h2>{currentUser.username}</h2>
    </div>

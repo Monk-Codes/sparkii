@@ -11,6 +11,7 @@ const ChatList = () => {
  const [addMode, setAddMode] = useState(false);
  const [chats, setChats] = useState([]);
  const [input, setInput] = useState("");
+ const [selectedChats, setSelectedChats] = useState([]);
  const { currentUser } = useUserStore();
  const { changeChat } = useChatStore();
  const navigate = useNavigate();
@@ -121,6 +122,38 @@ const ChatList = () => {
   }
  };
 
+ const handleCheckboxChange = (chatId) => {
+  setSelectedChats((prev) => {
+   if (prev.includes(chatId)) {
+    return prev.filter((id) => id !== chatId);
+   } else {
+    return [...prev, chatId];
+   }
+  });
+ };
+
+ const handleDelete = async () => {
+  if (!currentUser || !currentUser.id) {
+   console.error("Current user is not set or does not have an ID");
+   return;
+  }
+
+  const userChatsRef = doc(db, "userchats", currentUser.id);
+  try {
+   const updatedChats = chats.filter((chat) => !selectedChats.includes(chat.chatId));
+   await updateDoc(userChatsRef, {
+    chats: updatedChats.map((chat) => {
+     const { ...rest } = chat;
+     return rest;
+    }),
+   });
+   setChats(updatedChats);
+   setSelectedChats([]);
+  } catch (error) {
+   console.error("Error deleting chats:", error);
+  }
+ };
+
  const filteredChats = chats.filter((e) => e.user.username.toLowerCase().includes(input.toLowerCase()));
 
  return (
@@ -130,20 +163,30 @@ const ChatList = () => {
      <img src="./search.png" alt="search" className="h-4 w-4 ml-4" />
      <input type="text" placeholder="search" className="bg-transparent rounded-none outline-none text-white flex-1" onChange={(e) => setInput(e.target.value)} />
     </div>
-    <img src={addMode ? "./minus.png" : "./plus.png"} alt="plus" className="h-8 w-8 bg-slate-800 p-2 cursor-pointer rounded-xl" onClick={() => setAddMode((prev) => !prev)} />
+    <img src={addMode ? "./minus.png" : "./plus.png"} alt="plus" title="Add user" className="h-8 w-8 bg-slate-800 p-2 cursor-pointer rounded-xl" onClick={() => setAddMode((prev) => !prev)} />
+    <button onClick={handleDelete} title="Delete" className="cursor-pointer rounded-full border hover:border-red-900">
+     ❌
+    </button>
    </div>
    {addMode && <AddUser />}
    {filteredChats.map((chat) => (
-    <div className="item flex items-center justify-between gap-5 p-5 cursor-pointer border-b border-b-slate-400" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
-     <div className="flex justify-between gap-4">
-      <img src={chat.user.blocked.includes(currentUser.id) ? "./avatar.png" : chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
-      <div className="texts flex gap-2 flex-col ">
-       <span className="font-medium">{chat.user.blocked.includes(currentUser.id) ? "User" : chat.user.username}</span>
-       <p className="text-xs font-light ">{chat.lastMessage}</p>
+    <>
+     <div className="border-b border-b-slate-400 flex flex-col rounded-3xl px-4 py-1 ">
+      <div className="item flex items-center justify-between gap-5 px-4 py-1 cursor-pointer rounded-3xl" onClick={() => handleSelect(chat)} key={chat.chatId} style={{ backgroundColor: chat?.isSeen ? "transparent" : "#5183ee" }}>
+       <div className="flex justify-between gap-4 pt-2">
+        <img src={chat.user.blocked.includes(currentUser.id) ? "./avatar.png" : chat.user.avatar || "./avatar.png"} alt="profile" className="w-12 h-12 rounded-full object-cover" />
+        <div className="texts flex gap-2 flex-col">
+         <span className="font-medium">{chat.user.blocked.includes(currentUser.id) ? "User" : chat.user.username}</span>
+         <p className="text-xs font-light text-left">{chat.lastMessage}</p>
+        </div>
+       </div>
+      </div>
+      <div className="flex gap-1 self-end p-1 ">
+       <span className="self-center text-xs">{formatDistanceToNowCustom(chat.updatedAt)}</span>
+       <input type="checkbox" checked={selectedChats.includes(chat.chatId)} onChange={() => handleCheckboxChange(chat.chatId)} />
       </div>
      </div>
-     <span className="self-center text-xs">{formatDistanceToNowCustom(chat.updatedAt)}</span>
-    </div>
+    </>
    ))}
   </div>
  );

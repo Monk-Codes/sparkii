@@ -26,15 +26,14 @@ const LoginPage = () => {
   e.preventDefault();
   const formData = new FormData(e.target);
   const { email, password } = Object.fromEntries(formData.entries());
-  console.log("Login attempt with email:", email);
   try {
    await signInWithEmailAndPassword(auth, email, password);
-   navigate("/list");
    toast.success("Login successful");
   } catch (error) {
    console.error("Login error:", error);
    toast.error("Please login with correct credentials");
   }
+  navigate("/list");
  };
 
  const handleRegister = async (e) => {
@@ -56,7 +55,6 @@ const LoginPage = () => {
    const res = await createUserWithEmailAndPassword(auth, email, password);
    console.log("User created with UID:", res.user.uid);
    const imgUrl = await upload(avatar.file);
-   console.log("Avatar uploaded to URL:", imgUrl);
    await setDoc(doc(db, "users", res.user.uid), {
     username,
     email,
@@ -67,41 +65,43 @@ const LoginPage = () => {
    await setDoc(doc(db, "userchats", res.user.uid), {
     chats: [],
    });
-   navigate("/list");
    toast.success("Account created successfully");
    toast.success("You can Login now");
   } catch (error) {
    console.error("Registration error:", error);
    toast.error(error.message);
   }
+  navigate("/list");
  };
 
  return (
-  <div className="login w-full h-full flex flex-col items-center gap-2 p-10">
-   <div className="item flex-1 flex flex-col items-center gap-2">
-    <h2>Welcome Back</h2>
-    <form className="flex flex-col items-center justify-center gap-1" onSubmit={handleLogin}>
-     <input type="email" placeholder="Email" name="email" required />
-     <input type="password" placeholder="Password" name="password" required minLength={6} />
-     <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">Log In</button>
-    </form>
-   </div>
+  <div className="login w-full h-full flex flex-col items-center justify-center bg-gray-900 bg-opacity-75 p-10">
+   <div className="bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg rounded-xl p-8 shadow-lg max-w-md w-full">
+    <div className="item flex-1 flex flex-col items-center gap-2 mb-8">
+     <h2 className="text-white text-xl font-bold">Welcome Back</h2>
+     <form className="flex flex-col items-center justify-center gap-2 w-full" onSubmit={handleLogin}>
+      <input type="email" placeholder="Email" name="email" required className="p-3 w-full bg-gray-800 bg-opacity-50 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition" />
+      <input type="password" placeholder="Password" name="password" required minLength={6} className="p-3 w-full bg-gray-800 bg-opacity-50 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition" />
+      <button className="p-3 w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">Log In</button>
+     </form>
+    </div>
 
-   <div className="separator w-1/2 border border-gray-800 my-4"></div>
+    <div className="separator w-full border-t border-gray-800 my-4"></div>
 
-   <div className="item flex-1 flex flex-col items-center gap-2">
-    <h2>Create an Account</h2>
-    <form className="flex flex-col items-center justify-center gap-1" onSubmit={handleRegister}>
-     <label htmlFor="file">
-      <img src={avatar.url || "./avatar.png"} alt="avatar" className="w-12 h-12 rounded-full object-cover opacity-40" />
-      <span>Upload an Image</span>
-     </label>
-     <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} />
-     <input type="text" placeholder="Username" name="username" required minLength={6} />
-     <input type="email" placeholder="Email" name="email" required />
-     <input type="password" placeholder="Password" name="password" required minLength={6} />
-     <button className="p-3 cursor-pointer bg-blue-300 hover:bg-blue-400 rounded-2xl">Sign Up</button>
-    </form>
+    <div className="item flex-1 flex flex-col items-center gap-2">
+     <h2 className="text-white text-xl font-bold">Create an Account</h2>
+     <form className="flex flex-col items-center justify-center gap-2 w-full" onSubmit={handleRegister}>
+      <label htmlFor="file" className="flex flex-col items-center cursor-pointer">
+       <img src={avatar.url || "./avatar.png"} alt="avatar" className="w-10 h-10 rounded-full object-cover border-2 border-gray-800 hover:opacity-80 transition" />
+       <span className="text-white mt-1">Upload an Image</span>
+      </label>
+      <input type="file" id="file" style={{ display: "none" }} onChange={handleAvatar} />
+      <input type="text" placeholder="Username" name="username" required minLength={6} className="p-3 w-full bg-gray-800 bg-opacity-50 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition" />
+      <input type="email" placeholder="Email" name="email" required className="p-3 w-full bg-gray-800 bg-opacity-50 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition" />
+      <input type="password" placeholder="Password" name="password" required minLength={6} className="p-3 w-full bg-gray-800 bg-opacity-50 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-400 transition" />
+      <button className="p-3 w-full bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition">Sign Up</button>
+     </form>
+    </div>
    </div>
   </div>
  );

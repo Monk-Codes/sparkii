@@ -5,7 +5,7 @@ ToastContainer;
 const Notification = () => {
  return (
   <div className="">
-   <ToastContainer position="top-center" closeOnClick newestOnTop autoClose={300} theme="dark" limit={1} />
+   <ToastContainer position="top-center" closeOnClick newestOnTop autoClose={500} theme="dark" limit={1} />
   </div>
  );
 };
