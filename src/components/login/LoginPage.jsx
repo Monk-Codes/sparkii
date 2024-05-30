@@ -29,7 +29,7 @@ const LoginPage = () => {
   console.log("Login attempt with email:", email);
   try {
    await signInWithEmailAndPassword(auth, email, password);
-   navigate("/");
+   navigate("/list");
    toast.success("Login successful");
   } catch (error) {
    console.error("Login error:", error);
@@ -67,7 +67,7 @@ const LoginPage = () => {
    await setDoc(doc(db, "userchats", res.user.uid), {
     chats: [],
    });
-   navigate("/");
+   navigate("/list");
    toast.success("Account created successfully");
    toast.success("You can Login now");
   } catch (error) {

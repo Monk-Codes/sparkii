@@ -16,12 +16,20 @@ const ChatList = () => {
  const navigate = useNavigate();
 
  const formatDistanceToNowCustom = (dateString) => {
-  const date = new Date(dateString);
-  const secondsAgo = differenceInSeconds(new Date(), date);
-  if (secondsAgo < 60) {
-   return `${secondsAgo} seconds ago`;
+  try {
+   const date = new Date(dateString);
+   if (isNaN(date)) {
+    throw new Error("Invalid date");
+   }
+   const secondsAgo = differenceInSeconds(new Date(), date);
+   if (secondsAgo < 60) {
+    return `${secondsAgo} seconds ago`;
+   }
+   return formatDistanceToNow(date, { addSuffix: true });
+  } catch (error) {
+   console.error("Error parsing date:", dateString, error);
+   return "Invalid date";
   }
-  return formatDistanceToNow(date, { addSuffix: true });
  };
 
  useEffect(() => {
@@ -80,7 +88,13 @@ const ChatList = () => {
    });
 
    const chatData = (await Promise.all(promises)).filter((item) => item !== null);
-   setChats(chatData.sort((a, b) => b.updatedAt - a.updatedAt));
+
+   // Logging the `updatedAt` values to inspect them
+   chatData.forEach((chat) => {
+    console.log("Chat updatedAt value:", chat.updatedAt);
+   });
+
+   setChats(chatData.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt)));
   });
 
   return () => {

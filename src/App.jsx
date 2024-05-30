@@ -31,12 +31,12 @@ const App = () => {
     <Routes>
      {currentUser ? (
       <>
-       <Route path="/" element={<List />} />
+       <Route path="/list" element={<List />} />
        {chatId && <Route path="/chat" element={<Chat />} />}
        {chatId && <Route path="/detail" element={<ChatDetail />} />}
       </>
      ) : (
-      <Route path="/login" element={<LoginPage />} />
+      <Route path="/" element={<LoginPage />} />
      )}
     </Routes>
     <Notification />
