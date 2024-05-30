@@ -195,8 +195,10 @@ const Chat = () => {
        </div>
        <div className="emoji relative">
         <img src="./emoji.png" alt="emoji" className="w-5 h-5" onClick={() => setShowEmoji((prev) => !prev)} />
-        <div className="picker">
-         <EmojiPicker open={showEmoji} onEmojiClick={handleEmoji} className="max-w-90 max-h-80 rounded z-40" />
+        <div className="absolute bottom-0">
+         <div className="picker">
+          <EmojiPicker open={showEmoji} onEmojiClick={handleEmoji} className="max-w-72 max-h-80 rounded z-40 overscroll-y bottom-0" />
+         </div>
         </div>
        </div>
        <input
@@ -209,6 +211,7 @@ const Chat = () => {
         value={text}
         onChange={(e) => setText(e.target.value)}
        />
+
        <button className="sendBtn bg-green-700 text-white py-1 px-4 rounded-3xl cursor-pointer disabled:cursor-not-allowed" disabled={isCurrentUserBlocked || isReceiverBlocked} onClick={handleSend}>
         Send
        </button>
