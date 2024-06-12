@@ -29,11 +29,11 @@ const LoginPage = () => {
   try {
    await signInWithEmailAndPassword(auth, email, password);
    toast.success("Login successful");
+   navigate("/list");
   } catch (error) {
    console.error("Login error:", error);
    toast.error("Please login with correct credentials");
   }
-  navigate("/list");
  };
 
  const handleRegister = async (e) => {
