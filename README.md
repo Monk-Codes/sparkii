@@ -40,9 +40,6 @@
 ![Screenshot (114)](https://github.com/Monk-Codes/sparkii/assets/84877191/f2bcbf47-cea8-4f3b-b532-38a9dde754ce)
 ![Screenshot (115)](https://github.com/Monk-Codes/sparkii/assets/84877191/fef78df5-33e8-43eb-9835-5ecdfa0cbb7f)
 
-    
-PortFolio of Monk-Codes
-
 Here's why:
 
 * Your time should be focused on creating something amazing. A project that solves a problem and helps others
